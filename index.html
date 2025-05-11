@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Calculator with Operator Prompt</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      background: #121212;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .calculator {
+      background: #1f1f2e;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      width: 330px;
+      position: relative;
+    }
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 2em;
+      height: 70px;
+      text-align: right;
+      padding: 10px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .live-result {
+      font-size: 0.9em;
+      color: #ccc;
+      text-align: right;
+      margin-top: 5px;
+      min-height: 20px;
+      padding-right: 10px;
+    }
+    .buttons, .file-manager {
+      margin-top: 20px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background-color: #33334d;
+      color: #fff;
+      cursor: pointer;
+    }
+    button.equal { background: #ff5722; }
+    button.clear { background: #e53935; }
+    button.op { background: #388e3c; }
+    #fileManager {
+      display: none;
+      color: #fff;
+    }
+    #fileList img, #fileList video {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .exit-btn {
+      background: #c62828;
+      margin-top: 10px;
+    }
+    #historySection {
+      display: none;
+      color: white;
+      margin-top: 20px;
+    }
+    #historySection ul {
+      max-height: 150px;
+      overflow-y: auto;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="live-result" id="liveResult"></div>
+
+    <div class="buttons" id="buttons">
+      <button class="clear" onclick="clearDisplay()">AC</button>
+      <button onclick="appendValue('(')">(</button>
+      <button onclick="appendValue(')')">)</button>
+      <button onclick="backspace()">DEL</button>
+
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button class="op" onclick="appendValue('/')">÷</button>
+
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button class="op" onclick="appendValue('*')">×</button>
+
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button class="op" onclick="appendValue('-')">−</button>
+
+      <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="appendValue('%')">%</button>
+      <button class="op" onclick="appendValue('+')">+</button>
+
+      <button onclick="appendValue('Math.sqrt(')">√</button>
+      <button onclick="appendValue('**')">^</button>
+      <button class="equal" style="grid-column: span 2" onclick="calculate()">=</button>
+      <button onclick="showHistory()">History</button>
+    </div>
+
+    <div id="historySection">
+      <h3>History</h3>
+      <ul id="historyList"></ul>
+      <button class="exit-btn" onclick="hideHistory()">Back</button>
+    </div>
+
+    <div class="file-manager" id="fileManager">
+      <input type="file" id="fileInput" multiple accept="image/*,video/*" />
+      <div id="fileList"></div>
+      <button class="exit-btn" onclick="exitFileManager()">Exit</button>
+    </div>
+  </div>
+
+  <!-- Service Worker रजिस्टर करना -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.error('SW registration failed:', err));
+    }
+  </script>
+
+  <script src="calculator.js"></script>
+</body>
+</html>
