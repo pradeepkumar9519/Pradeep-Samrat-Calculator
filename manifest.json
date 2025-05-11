@@ -1,11 +1,11 @@
 {
-  "name": "My Calculator App",
-  "short_name": "Calculator",
-  "description": "A simple advanced calculator app",
-  "start_url": ".",
+  "name": "Pradeep Samrat Calculator",
+  "short_name": "SamratCalc",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#121212",
+  "theme_color": "#1f1f2e",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
