@@ -1,0 +1,99 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.splash-screen {
+  font-size: 32px;
+  color: white;
+  text-align: center;
+  margin-top: 40vh;
+  animation: fadeOut 2s forwards 2s;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.calculator {
+  width: 350px;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #000;
+}
+
+.display-container {
+  margin-bottom: 10px;
+}
+
+.display {
+  width: 100%;
+  height: 60px;
+  font-size: 24px;
+  padding: 10px;
+  background: #2c2c2c;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.history {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 4px;
+  height: 20px;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.keypad button {
+  padding: 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px #000;
+}
+
+.keypad button:active {
+  background: #444;
+}
+
+#fileManager {
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+#fileList video,
+#fileList img {
+  max-width: 100%;
+  margin-top: 10px;
+}
