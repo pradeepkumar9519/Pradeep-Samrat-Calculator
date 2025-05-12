@@ -96,3 +96,10 @@ button.op {
   overflow-y: auto;
   padding-left: 20px;
 }
+
+if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
+        const msg = new SpeechSynthesisUtterance(
+          "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+        );
+        speechSynthesis.speak(msg);
+        return
