@@ -1,19 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Advanced Calculator with Operator Prompt</title>
-
-  <!-- PWA Support -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1f1f2e" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('SW Registered', reg))
-        .catch(err => console.error('SW Registration Failed', err));
-    }
-  </script>
-
   <style>
     body {
       margin: 0;
@@ -24,4 +14,306 @@
       align-items: center;
       height: 100vh;
     }
-    /* ... baaki CSS same hi rakhi gayi hai ... */
+    .calculator {
+      background: #1f1f2e;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      width: 330px;
+      position: relative;
+    }
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 2em;
+      height: 70px;
+      text-align: right;
+      padding: 10px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .live-result {
+      font-size: 0.9em;
+      color: #ccc;
+      text-align: right;
+      margin-top: 5px;
+      min-height: 20px;
+      padding-right: 10px;
+    }
+    .buttons, .file-manager {
+      margin-top: 20px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background-color: #33334d;
+      color: #fff;
+      cursor: pointer;
+    }
+    button.equal { background: #ff5722; }
+    button.clear { background: #e53935; }
+    button.op { background: #388e3c; }
+    #fileManager {
+      display: none;
+      color: #fff;
+    }
+    #fileList img, #fileList video {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .exit-btn {
+      background: #c62828;
+      margin-top: 10px;
+    }
+    #historySection {
+      display: none;
+      color: white;
+      margin-top: 20px;
+    }
+    #historySection ul {
+      max-height: 150px;
+      overflow-y: auto;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="live-result" id="liveResult"></div>
+
+    <div class="buttons" id="buttons">
+      <button class="clear" onclick="clearDisplay()">AC</button>
+      <button onclick="appendValue('(')">(</button>
+      <button onclick="appendValue(')')">)</button>
+      <button onclick="backspace()">DEL</button>
+
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button class="op" onclick="appendValue('/')">÷</button>
+
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button class="op" onclick="appendValue('*')">×</button>
+
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button class="op" onclick="appendValue('-')">−</button>
+
+      <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="appendValue('%')">%</button>
+      <button class="op" onclick="appendValue('+')">+</button>
+
+      <button onclick="appendValue('Math.sqrt(')">√</button>
+      <button onclick="appendValue('**')">^</button>
+      <button class="equal" style="grid-column: span 2" onclick="calculate()">=</button>
+      <button onclick="showHistory()">History</button>
+    </div>
+
+    <div id="historySection">
+      <h3>History</h3>
+      <ul id="historyList"></ul>
+      <button class="exit-btn" onclick="hideHistory()">Back</button>
+    </div>
+
+    <div class="file-manager" id="fileManager">
+      <input type="file" id="fileInput" multiple accept="image/*,video/*" />
+      <div id="fileList"></div>
+      <button class="exit-btn" onclick="exitFileManager()">Exit</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const liveResult = document.getElementById('liveResult');
+    const buttonsDiv = document.getElementById('buttons');
+    const fileManager = document.getElementById('fileManager');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    const historySection = document.getElementById('historySection');
+    const historyList = document.getElementById('historyList');
+
+    let storedPassword = localStorage.getItem('hiddenPass') || null;
+    let settingNewPass = false;
+
+    function appendValue(val) {
+      if (display.textContent === '0') display.textContent = val;
+      else display.textContent += val;
+      updateLiveResult();
+    }
+
+    function clearDisplay() {
+      display.textContent = '0';
+      liveResult.textContent = '';
+    }
+
+    function backspace() {
+      if (display.textContent.length > 1)
+        display.textContent = display.textContent.slice(0, -1);
+      else display.textContent = '0';
+      updateLiveResult();
+    }
+
+    function updateLiveResult() {
+      try {
+        const input = display.textContent;
+        if (input.trim() === '' || input === '0') {
+          liveResult.textContent = '';
+          return;
+        }
+        const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
+        const result = eval(percentageHandled);
+        liveResult.textContent = isNaN(result) ? '' : `= ${result}`;
+      } catch {
+        liveResult.textContent = '';
+      }
+    }
+
+    function saveToHistory(entry) {
+      let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+      history.unshift(entry);
+      if (history.length > 10) history = history.slice(0, 10);
+      localStorage.setItem('calcHistory', JSON.stringify(history));
+    }
+
+    function showHistory() {
+      buttonsDiv.style.display = 'none';
+      historySection.style.display = 'block';
+      loadHistory();
+    }
+
+    function hideHistory() {
+      historySection.style.display = 'none';
+      buttonsDiv.style.display = 'grid';
+      display.textContent = '0';
+      liveResult.textContent = '';
+    }
+
+    function loadHistory() {
+      historyList.innerHTML = '';
+      JSON.parse(localStorage.getItem('calcHistory') || '[]')
+        .forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          historyList.appendChild(li);
+        });
+    }
+
+    function calculate() {
+      const input = display.textContent.trim();
+
+      if (input === '1234' && !storedPassword) {
+        settingNewPass = true;
+        display.textContent = 'Set New Pass';
+        liveResult.textContent = '';
+        return;
+      }
+
+      if (settingNewPass) {
+        if (input.length === 4) {
+          localStorage.setItem('hiddenPass', input);
+          storedPassword = input;
+          settingNewPass = false;
+          alert('New password set successfully!');
+          display.textContent = '0';
+        } else {
+          alert('Enter 4-digit password only.');
+        }
+        return;
+      }
+
+      if (storedPassword && input === storedPassword) {
+        openFileManager();
+        display.textContent = '0';
+        liveResult.textContent = '';
+        return;
+      }
+
+      if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
+        const msg = new SpeechSynthesisUtterance(
+          "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+        );
+        speechSynthesis.speak(msg);
+        return;
+      }
+
+      try {
+        const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
+        const result = eval(percentageHandled);
+        saveToHistory(`${input} = ${result}`);
+        display.textContent = result;
+        liveResult.textContent = '';
+      } catch {
+        display.textContent = 'Error';
+        liveResult.textContent = '';
+      }
+    }
+
+    function openFileManager() {
+      buttonsDiv.style.display = 'none';
+      historySection.style.display = 'none';
+      fileManager.style.display = 'block';
+      loadFiles();
+    }
+
+    function exitFileManager() {
+      fileManager.style.display = 'none';
+      buttonsDiv.style.display = 'grid';
+      display.textContent = '0';
+      liveResult.textContent = '';
+    }
+
+    fileInput.addEventListener('change', () => {
+      const storedFiles = JSON.parse(localStorage.getItem('hiddenFiles') || '[]');
+      Array.from(fileInput.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          storedFiles.push({ name: file.name, data: reader.result, type: file.type });
+          localStorage.setItem('hiddenFiles', JSON.stringify(storedFiles));
+          loadFiles();
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function loadFiles() {
+      fileList.innerHTML = '';
+      JSON.parse(localStorage.getItem('hiddenFiles') || '[]').forEach((file, idx) => {
+        const wrapper = document.createElement('div');
+        if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = file.data;
+          wrapper.appendChild(img);
+        } else {
+          const vid = document.createElement('video');
+          vid.src = file.data;
+          vid.controls = true;
+          wrapper.appendChild(vid);
+        }
+        const btn = document.createElement('button');
+        btn.textContent = 'Unhide';
+        btn.onclick = () => {
+          let arr = JSON.parse(localStorage.getItem('hiddenFiles'));
+          arr.splice(idx, 1);
+          localStorage.setItem('hiddenFiles', JSON.stringify(arr));
+          loadFiles();
+        };
+        wrapper.appendChild(btn);
+        fileList.appendChild(wrapper);
+      });
+    }
+  </script>
+</body>
+</html>
