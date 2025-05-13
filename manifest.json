@@ -17,5 +17,11 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "id": "/Pradeep-Samrat-Calculator/",
+  "launch_handler": {
+    "routeMode": "navigate-existing"
+  },
+  "orientation": "portrait",
+  "screenshots": []
 }
