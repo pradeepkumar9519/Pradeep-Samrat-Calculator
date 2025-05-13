@@ -1,0 +1,109 @@
+body {
+    margin: 0;
+    background: #121212;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.calculator {
+    background: #1f1f2e;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    width: 330px;
+    position: relative;
+}
+.display {
+    background: #000;
+    color: #0f0;
+    font-size: 2em;
+    height: 70px;
+    text-align: right;
+    padding: 10px;
+    border-radius: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.live-result {
+    font-size: 0.9em;
+    color: #ccc;
+    text-align: right;
+    margin-top: 5px;
+    min-height: 20px;
+    padding-right: 10px;
+}
+.buttons, .file-manager {
+    margin-top: 20px;
+}
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+button {
+    padding: 20px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 12px;
+    background-color: #33334d;
+    color: #fff;
+    cursor: pointer;
+}
+button.equal { background: #ff5722; }
+button.clear { background: #e53935; }
+button.op { background: #388e3c; }
+#fileManager {
+    display: none;
+    color: #fff;
+}
+#fileList img, #fileList video {
+    width: 100%;
+    margin-top: 10px;
+}
+.exit-btn {
+    background: #c62828;
+    margin-top: 10px;
+}
+#historySection {
+    display: none;
+    color: white;
+    margin-top: 20px;
+}
+#historySection ul {
+    max-height: 150px;
+    overflow-y: auto;
+    padding-left: 20px;
+}
+.file-item {
+    background-color: #303030;
+    margin: 10px 0;
+    padding: 10px;
+    color: white;
+    border-radius: 8px;
+}
+.rename-btn, .delete-btn {
+    margin-top: 5px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+}
+#introScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #00ff00;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    z-index: 9999;
+    font-weight: bold;
+}
