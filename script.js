@@ -16,7 +16,7 @@ const filesStore = 'hiddenFiles';
 
 let storedPassword = null;
 let settingNewPass = false;
-let welcomeSaid = false;
+let welcomeSaid = false; // Add this line
 
 // Initialize IndexedDB
 const request = indexedDB.open(dbName, 1);
@@ -73,6 +73,7 @@ function loadPassword() {
         setTimeout(() => {
             introScreen.style.display = "none";
             document.getElementById("calculatorApp").style.display = "block";
+            // Welcome voice on load - kept as per original code
             if (!welcomeSaid) {
                 const welcome = new SpeechSynthesisUtterance(
                     "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
@@ -109,6 +110,7 @@ function updateLiveResult() {
             liveResult.textContent = '';
             return;
         }
+        // Handle percentage calculation
         const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
         const result = eval(percentageHandled);
         liveResult.textContent = isNaN(result) ? '' : `= ${result}`;
@@ -124,14 +126,14 @@ function saveToHistory(entry) {
 }
 
 function loadHistory() {
-    historyList.innerHTML = '';
+    historyList.innerHTML = ''; // Clear current list
     const transaction = db.transaction([historyStore], 'readonly');
     const store = transaction.objectStore(historyStore);
     const request = store.openCursor(null, 'prev');
     let count = 0;
     request.onsuccess = function(event) {
         const cursor = event.target.result;
-        if (cursor && count < 10) {
+        if (cursor && count < 10) { // Load up to 10 history entries
             const li = document.createElement('li');
             li.textContent = cursor.value;
             historyList.appendChild(li);
@@ -157,6 +159,7 @@ function hideHistory() {
 function calculate() {
     const input = display.textContent.trim();
 
+    // Speak welcome message if input contains only operators or power - kept as per original code
     if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
         const msg = new SpeechSynthesisUtterance(
             "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
@@ -165,6 +168,7 @@ function calculate() {
         return;
     }
 
+    // Password setting logic - kept as per original code
     if (input === '1234' && !storedPassword) {
         settingNewPass = true;
         display.textContent = 'Set New Pass';
@@ -184,6 +188,7 @@ function calculate() {
         return;
     }
 
+    // File manager access logic - kept as per original code
     if (storedPassword && input === storedPassword) {
         openFileManager();
         display.textContent = '0';
@@ -191,6 +196,7 @@ function calculate() {
         return;
     }
 
+    // Normal calculation logic
     try {
         const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
         const result = eval(percentageHandled);
@@ -218,6 +224,7 @@ function exitFileManager() {
     liveResult.textContent = '';
 }
 
+// File input change listener - kept as per original code
 fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files);
     files.forEach(file => {
@@ -238,7 +245,7 @@ function saveFileToDB(fileData) {
     const store = transaction.objectStore(filesStore);
     const addRequest = store.add(fileData);
     addRequest.onsuccess = () => {
-        loadFiles();
+        loadFiles(); // Reload files after saving
     };
     transaction.onerror = (error) => {
         console.error("Transaction Error (saveFileToDB):", error);
@@ -247,7 +254,7 @@ function saveFileToDB(fileData) {
 }
 
 function loadFiles() {
-    fileList.innerHTML = '';
+    fileList.innerHTML = ''; // Clear current list
     const transaction = db.transaction([filesStore], 'readonly');
     const store = transaction.objectStore(filesStore);
     const request = store.openCursor();
@@ -257,6 +264,7 @@ function loadFiles() {
             const file = cursor.value;
             const fileDiv = document.createElement('div');
             fileDiv.classList.add('file-item');
+            // Display image or video based on file type - kept as per original code
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = file.data;
@@ -265,13 +273,14 @@ function loadFiles() {
                 const video = document.createElement('video');
                 video.src = file.data;
                 video.controls = true;
-                video.volume = 1.0;
+                video.volume = 1.0; // Set default volume
                 fileDiv.appendChild(video);
             } else {
                 const p = document.createElement('p');
                 p.textContent = `File: ${file.name}`;
                 fileDiv.appendChild(p);
             }
+            // Add rename and delete buttons - kept as per original code
             const renameBtn = document.createElement('button');
             renameBtn.classList.add('rename-btn');
             renameBtn.textContent = 'Rename';
@@ -283,7 +292,7 @@ function loadFiles() {
             fileDiv.appendChild(renameBtn);
             fileDiv.appendChild(deleteBtn);
             fileList.appendChild(fileDiv);
-            cursor.continue();
+            cursor.continue(); // Move to the next file
         }
     };
     request.onerror = (error) => {
@@ -303,7 +312,7 @@ function renameFile(key, oldName) {
             file.name = newName;
             const updateRequest = store.put(file, key);
             updateRequest.onsuccess = () => {
-                loadFiles();
+                loadFiles(); // Reload files after renaming
             };
             updateRequest.onerror = (error) => {
                 console.error("Error renaming file:", error);
@@ -322,7 +331,7 @@ function deleteFile(key) {
     const store = transaction.objectStore(filesStore);
     const request = store.delete(key);
     request.onsuccess = () => {
-        loadFiles();
+        loadFiles(); // Reload files after deleting
     };
     request.onerror = (error) => {
         console.error("Error deleting file:", error);
@@ -330,7 +339,7 @@ function deleteFile(key) {
     };
 }
 
-// Splash screen + Welcome voice
+// Splash screen + Welcome voice on DOMContentLoaded - kept as per original code
 window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         introScreen.style.display = "none";
