@@ -16,7 +16,7 @@ const filesStore = 'hiddenFiles';
 
 let storedPassword = null;
 let settingNewPass = false;
-let welcomeSaid = false;
+let welcomeSaid = false; // Add this line
 
 // Initialize IndexedDB
 const request = indexedDB.open(dbName, 1);
@@ -67,12 +67,13 @@ function getPasswordFromDB(callback) {
     };
 }
 
+
 function loadPassword() {
     getPasswordFromDB(() => {
         setTimeout(() => {
             introScreen.style.display = "none";
             document.getElementById("calculatorApp").style.display = "block";
-            if (!welcomeSaid) {
+             if (!welcomeSaid) {
                 const welcome = new SpeechSynthesisUtterance(
                     "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
                 );
