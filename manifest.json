@@ -20,8 +20,13 @@
   ],
   "id": "/Pradeep-Samrat-Calculator/",
   "launch_handler": {
-    "routeMode": "navigate-existing"
+    "client_mode": "navigate-existing"
   },
   "orientation": "portrait",
+  "categories": ["productivity", "utilities"],
+  "dir": "ltr",
+  "lang": "en",
+  "prefer_related_applications": false,
+  "scope": "/Pradeep-Samrat-Calculator/",
   "screenshots": []
 }
