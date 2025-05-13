@@ -163,8 +163,7 @@
     </div>
     <script>
       if ('serviceWorker' in navigator) {
-        // सर्विस वर्कर का रजिस्ट्रेशन पाथ और स्कोप अपडेट किया गया है
-        navigator.serviceWorker.register('/Pradeep-Samrat-Calculator/sw.js', { scope: '/Pradeep-Samrat-Calculator/' })
+        navigator.serviceWorker.register('/sw.js')
           .then(function(registration) {
             console.log('Service Worker registered successfully with scope: ', registration.scope);
           })
