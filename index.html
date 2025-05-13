@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Advanced Calculator with File Manager</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="introScreen">🇮🇳Created By India🇮🇳</div>
+
+    <div class="calculator" id="calculatorApp" style="display:none;">
+        <div class="display" id="display">0</div>
+        <div class="live-result" id="liveResult"></div>
+        <div class="buttons" id="buttons">
+            <button class="clear" onclick="clearDisplay()">AC</button>
+            <button onclick="appendValue('(')">(</button>
+            <button onclick="appendValue(')')">)</button>
+            <button onclick="backspace()">DEL</button>
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button class="op" onclick="appendValue('/')">÷</button>
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button class="op" onclick="appendValue('*')">×</button>
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button class="op" onclick="appendValue('-')">−</button>
+            <button onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button onclick="appendValue('%')">%</button>
+            <button class="op" onclick="appendValue('+')">+</button>
+            <button onclick="appendValue('Math.sqrt(')">√</button>
+            <button onclick="appendValue('**')">^</button>
+            <button class="equal" style="grid-column: span 2" onclick="calculate()">=</button>
+            <button onclick="showHistory()">History</button>
+        </div>
+
+        <div id="historySection">
+            <h3>History</h3>
+            <ul id="historyList"></ul>
+            <button class="exit-btn" onclick="hideHistory()">Back</button>
+        </div>
+
+        <div class="file-manager" id="fileManager">
+            <input type="file" id="fileInput" multiple accept="image/*,video/*" />
+            <div id="fileList"></div>
+            <button class="exit-btn" onclick="exitFileManager()">Exit</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
