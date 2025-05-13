@@ -73,10 +73,10 @@ function loadPassword() {
         setTimeout(() => {
             introScreen.style.display = "none";
             document.getElementById("calculatorApp").style.display = "block";
-            // Welcome voice on load - kept as per original code
+            // Welcome voice on load
             if (!welcomeSaid) {
                 const welcome = new SpeechSynthesisUtterance(
-                    "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+                    "Wellcome to Pradeep Samrat Calculator. Pradeep Samrat Calculator Mein Aapka Swagat Hai"
                 );
                 speechSynthesis.speak(welcome);
                 welcomeSaid = true;
@@ -159,16 +159,16 @@ function hideHistory() {
 function calculate() {
     const input = display.textContent.trim();
 
-    // Speak welcome message if input contains only operators or power - kept as per original code
+    // Speak welcome message if input contains only operators or power
     if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
         const msg = new SpeechSynthesisUtterance(
-            "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+            "Wellcome to Pradeep Samrat Calculator. Pradeep Samrat Calculator Mein Aapka Swagat Hai"
         );
         speechSynthesis.speak(msg);
         return;
     }
 
-    // Password setting logic - kept as per original code
+    // Password setting logic
     if (input === '1234' && !storedPassword) {
         settingNewPass = true;
         display.textContent = 'Set New Pass';
@@ -188,7 +188,7 @@ function calculate() {
         return;
     }
 
-    // File manager access logic - kept as per original code
+    // File manager access logic
     if (storedPassword && input === storedPassword) {
         openFileManager();
         display.textContent = '0';
@@ -224,7 +224,7 @@ function exitFileManager() {
     liveResult.textContent = '';
 }
 
-// File input change listener - kept as per original code
+// File input change listener
 fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files);
     files.forEach(file => {
@@ -264,7 +264,7 @@ function loadFiles() {
             const file = cursor.value;
             const fileDiv = document.createElement('div');
             fileDiv.classList.add('file-item');
-            // Display image or video based on file type - kept as per original code
+            // Display image or video based on file type
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = file.data;
@@ -280,7 +280,7 @@ function loadFiles() {
                 p.textContent = `File: ${file.name}`;
                 fileDiv.appendChild(p);
             }
-            // Add rename and delete buttons - kept as per original code
+            // Add rename and delete buttons
             const renameBtn = document.createElement('button');
             renameBtn.classList.add('rename-btn');
             renameBtn.textContent = 'Rename';
@@ -339,14 +339,14 @@ function deleteFile(key) {
     };
 }
 
-// Splash screen + Welcome voice on DOMContentLoaded - kept as per original code
+// Splash screen + Welcome voice on DOMContentLoaded
 window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         introScreen.style.display = "none";
         document.getElementById("calculatorApp").style.display = "block";
         if (!welcomeSaid) {
             const welcome = new SpeechSynthesisUtterance(
-                "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+                "Wellcome to Pradeep Samrat Calculator. Pradeep Samrat Calculator Mein Aapka Swagat Hai"
             );
             speechSynthesis.speak(welcome);
             welcomeSaid = true;
