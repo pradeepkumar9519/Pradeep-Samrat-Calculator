@@ -7,30 +7,24 @@ const fileList = document.getElementById('fileList');
 const historySection = document.getElementById('historySection');
 const historyList = document.getElementById('historyList');
 const introScreen = document.getElementById('introScreen');
-
 let db;
 const dbName = 'CalculatorAppDB';
 const passwordStore = 'passwords';
 const historyStore = 'calculationHistory';
 const filesStore = 'hiddenFiles';
-
 let storedPassword = null;
 let settingNewPass = false;
 let welcomeSaid = false; // Add this line
-
 // Initialize IndexedDB
 const request = indexedDB.open(dbName, 1);
-
-request.onerror = function(event) {
+request.onerror = function (event) {
     console.error("Database error: " + event.target.errorCode);
 };
-
-request.onsuccess = function(event) {
+request.onsuccess = function (event) {
     db = event.target.result;
     loadPassword();
 };
-
-request.onupgradeneeded = function(event) {
+request.onupgradeneeded = function (event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains(passwordStore)) {
         db.createObjectStore(passwordStore);
@@ -42,7 +36,6 @@ request.onupgradeneeded = function(event) {
         db.createObjectStore(filesStore, { autoIncrement: true });
     }
 };
-
 function savePasswordToDB(password) {
     const transaction = db.transaction([passwordStore], 'readwrite');
     const store = transaction.objectStore(passwordStore);
@@ -52,22 +45,19 @@ function savePasswordToDB(password) {
         loadPassword();
     };
 }
-
 function getPasswordFromDB(callback) {
     const transaction = db.transaction([passwordStore], 'readonly');
     const store = transaction.objectStore(passwordStore);
     const request = store.get('hiddenPass');
-    request.onsuccess = function() {
+    request.onsuccess = function () {
         storedPassword = request.result;
         callback();
     };
-    request.onerror = function() {
+    request.onerror = function () {
         storedPassword = null;
         callback();
     };
 }
-
-
 function loadPassword() {
     getPasswordFromDB(() => {
         setTimeout(() => {
@@ -84,25 +74,21 @@ function loadPassword() {
         }, 2000);
     });
 }
-
 function appendValue(val) {
     if (display.textContent === '0') display.textContent = val;
     else display.textContent += val;
     updateLiveResult();
 }
-
 function clearDisplay() {
     display.textContent = '0';
     liveResult.textContent = '';
 }
-
 function backspace() {
     if (display.textContent.length > 1)
         display.textContent = display.textContent.slice(0, -1);
     else display.textContent = '0';
     updateLiveResult();
 }
-
 function updateLiveResult() {
     try {
         const input = display.textContent;
@@ -118,20 +104,18 @@ function updateLiveResult() {
         liveResult.textContent = '';
     }
 }
-
 function saveToHistory(entry) {
     const transaction = db.transaction([historyStore], 'readwrite');
     const store = transaction.objectStore(historyStore);
     store.add(entry);
 }
-
 function loadHistory() {
     historyList.innerHTML = ''; // Clear current list
     const transaction = db.transaction([historyStore], 'readonly');
     const store = transaction.objectStore(historyStore);
     const request = store.openCursor(null, 'prev');
     let count = 0;
-    request.onsuccess = function(event) {
+    request.onsuccess = function (event) {
         const cursor = event.target.result;
         if (cursor && count < 10) { // Load up to 10 history entries
             const li = document.createElement('li');
@@ -142,24 +126,20 @@ function loadHistory() {
         }
     };
 }
-
 function showHistory() {
     buttonsDiv.style.display = 'none';
     historySection.style.display = 'block';
     loadHistory();
 }
-
 function hideHistory() {
     historySection.style.display = 'none';
     buttonsDiv.style.display = 'grid';
     display.textContent = '0';
     liveResult.textContent = '';
 }
-
 function calculate() {
     const input = display.textContent.trim();
-
-    // Speak welcome message if input contains only operators or power
+    // Speak welcome message if input contains only operators or power - kept as per original code
     if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
         const msg = new SpeechSynthesisUtterance(
             "Wellcome to Pradeep Samrat Calculator. Pradeep Samrat Calculator Mein Aapka Swagat Hai"
@@ -167,15 +147,13 @@ function calculate() {
         speechSynthesis.speak(msg);
         return;
     }
-
-    // Password setting logic
+    // Password setting logic - kept as per original code
     if (input === '1234' && !storedPassword) {
         settingNewPass = true;
         display.textContent = 'Set New Pass';
         liveResult.textContent = '';
         return;
     }
-
     if (settingNewPass) {
         if (input.length === 4) {
             savePasswordToDB(input);
@@ -187,15 +165,13 @@ function calculate() {
         }
         return;
     }
-
-    // File manager access logic
+    // File manager access logic - kept as per original code
     if (storedPassword && input === storedPassword) {
         openFileManager();
         display.textContent = '0';
         liveResult.textContent = '';
         return;
     }
-
     // Normal calculation logic
     try {
         const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
@@ -209,22 +185,19 @@ function calculate() {
         console.error("Calculation error:", error);
     }
 }
-
 function openFileManager() {
     buttonsDiv.style.display = 'none';
     historySection.style.display = 'none';
     fileManager.style.display = 'block';
     loadFiles();
 }
-
 function exitFileManager() {
     fileManager.style.display = 'none';
     buttonsDiv.style.display = 'grid';
     display.textContent = '0';
     liveResult.textContent = '';
 }
-
-// File input change listener
+// File input change listener - kept as per original code
 fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files);
     files.forEach(file => {
@@ -239,7 +212,6 @@ fileInput.addEventListener('change', () => {
         reader.readAsDataURL(file);
     });
 });
-
 function saveFileToDB(fileData) {
     const transaction = db.transaction([filesStore], 'readwrite');
     const store = transaction.objectStore(filesStore);
@@ -252,19 +224,18 @@ function saveFileToDB(fileData) {
         alert("Error saving file. See console for details.");
     };
 }
-
 function loadFiles() {
     fileList.innerHTML = ''; // Clear current list
     const transaction = db.transaction([filesStore], 'readonly');
     const store = transaction.objectStore(filesStore);
     const request = store.openCursor();
-    request.onsuccess = function(event) {
+    request.onsuccess = function (event) {
         const cursor = event.target.result;
         if (cursor) {
             const file = cursor.value;
             const fileDiv = document.createElement('div');
             fileDiv.classList.add('file-item');
-            // Display image or video based on file type
+            // Display image or video based on file type - kept as per original code
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = file.data;
@@ -280,7 +251,7 @@ function loadFiles() {
                 p.textContent = `File: ${file.name}`;
                 fileDiv.appendChild(p);
             }
-            // Add rename and delete buttons
+            // Add rename and delete buttons - kept as per original code
             const renameBtn = document.createElement('button');
             renameBtn.classList.add('rename-btn');
             renameBtn.textContent = 'Rename';
@@ -300,14 +271,13 @@ function loadFiles() {
         alert("Error loading files. See console for details.");
     };
 }
-
 function renameFile(key, oldName) {
     const newName = prompt('Enter new file name:', oldName);
     if (newName) {
         const transaction = db.transaction([filesStore], 'readwrite');
         const store = transaction.objectStore(filesStore);
         const getRequest = store.get(key);
-        getRequest.onsuccess = function() {
+        getRequest.onsuccess = function () {
             const file = getRequest.result;
             file.name = newName;
             const updateRequest = store.put(file, key);
@@ -325,7 +295,6 @@ function renameFile(key, oldName) {
         };
     }
 }
-
 function deleteFile(key) {
     const transaction = db.transaction([filesStore], 'readwrite');
     const store = transaction.objectStore(filesStore);
@@ -338,7 +307,6 @@ function deleteFile(key) {
         alert("Error deleting file. See console for details.");
     };
 }
-
 // Splash screen + Welcome voice on DOMContentLoaded
 window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
