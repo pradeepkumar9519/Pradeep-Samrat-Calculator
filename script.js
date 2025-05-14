@@ -1,358 +1,232 @@
-const display = document.getElementById('display');
-const liveResult = document.getElementById('liveResult');
-const buttonsDiv = document.getElementById('buttons');
-const fileManager = document.getElementById('fileManager');
-const fileInput = document.getElementById('fileInput');
-const fileList = document.getElementById('fileList');
-const historySection = document.getElementById('historySection');
-const historyList = document.getElementById('historyList');
-const introScreen = document.getElementById('introScreen');
+let currentInput = "";
+let history = [];
+let hiddenFiles = [];
+let currentFolder = "root";
+let password = null;
+let welcomeSaid = false;
 
-let db;
-const dbName = 'CalculatorAppDB';
-const passwordStore = 'passwords';
-const historyStore = 'calculationHistory';
-const filesStore = 'hiddenFiles';
+const display = document.getElementById("display");
+const result = document.getElementById("result");
+const historyList = document.getElementById("historyList");
+const hiddenSection = document.getElementById("hiddenSection");
+const folderList = document.getElementById("folderList");
+const fileList = document.getElementById("fileList");
+const introScreen = document.getElementById("introScreen");
 
-let storedPassword = null;
-let settingNewPass = false;
-let welcomeSaid = false; // Add this line
-
-// Initialize IndexedDB
-const request = indexedDB.open(dbName, 1);
-
-request.onerror = function(event) {
-    console.error("Database error: " + event.target.errorCode);
-};
-
-request.onsuccess = function(event) {
-    db = event.target.result;
-    loadPassword();
-};
-
-request.onupgradeneeded = function(event) {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains(passwordStore)) {
-        db.createObjectStore(passwordStore);
-    }
-    if (!db.objectStoreNames.contains(historyStore)) {
-        db.createObjectStore(historyStore, { autoIncrement: true });
-    }
-    if (!db.objectStoreNames.contains(filesStore)) {
-        db.createObjectStore(filesStore, { autoIncrement: true });
-    }
-};
-
-function savePasswordToDB(password) {
-    const transaction = db.transaction([passwordStore], 'readwrite');
-    const store = transaction.objectStore(passwordStore);
-    store.clear();
-    store.add(password, 'hiddenPass');
-    transaction.oncomplete = () => {
-        loadPassword();
-    };
-}
-
-function getPasswordFromDB(callback) {
-    const transaction = db.transaction([passwordStore], 'readonly');
-    const store = transaction.objectStore(passwordStore);
-    const request = store.get('hiddenPass');
-    request.onsuccess = function() {
-        storedPassword = request.result;
-        callback();
-    };
-    request.onerror = function() {
-        storedPassword = null;
-        callback();
-    };
-}
-
-
+// Splash screen + welcome
 function loadPassword() {
     getPasswordFromDB(() => {
         setTimeout(() => {
             introScreen.style.display = "none";
             document.getElementById("calculatorApp").style.display = "block";
-            // Welcome voice on load - kept as per original code
-            if (!welcomeSaid) {
-                const welcome = new SpeechSynthesisUtterance(
-                    "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
-                );
-                speechSynthesis.speak(welcome);
-                welcomeSaid = true;
-            }
+            speakWelcome(); // Call welcome voice here
         }, 2000);
     });
 }
 
-function appendValue(val) {
-    if (display.textContent === '0') display.textContent = val;
-    else display.textContent += val;
-    updateLiveResult();
+function speakWelcome() {
+    const voices = speechSynthesis.getVoices();
+    if (voices.length === 0) {
+        speechSynthesis.onvoiceschanged = () => {
+            speakWelcome(); // Retry after voices load
+        };
+        return;
+    }
+    if (!welcomeSaid) {
+        const welcome = new SpeechSynthesisUtterance(
+            "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
+        );
+        welcome.voice = voices.find(voice => voice.lang.startsWith('hi')) || voices[0];
+        speechSynthesis.speak(welcome);
+        welcomeSaid = true;
+    }
+}
+
+// Calculator functionality
+function appendToDisplay(value) {
+    currentInput += value;
+    display.textContent = currentInput;
 }
 
 function clearDisplay() {
-    display.textContent = '0';
-    liveResult.textContent = '';
+    currentInput = "";
+    display.textContent = "";
+    result.textContent = "";
 }
 
 function backspace() {
-    if (display.textContent.length > 1)
-        display.textContent = display.textContent.slice(0, -1);
-    else display.textContent = '0';
-    updateLiveResult();
-}
-
-function updateLiveResult() {
-    try {
-        const input = display.textContent;
-        if (input.trim() === '' || input === '0') {
-            liveResult.textContent = '';
-            return;
-        }
-        // Handle percentage calculation
-        const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
-        const result = eval(percentageHandled);
-        liveResult.textContent = isNaN(result) ? '' : `= ${result}`;
-    } catch {
-        liveResult.textContent = '';
-    }
-}
-
-function saveToHistory(entry) {
-    const transaction = db.transaction([historyStore], 'readwrite');
-    const store = transaction.objectStore(historyStore);
-    store.add(entry);
-}
-
-function loadHistory() {
-    historyList.innerHTML = ''; // Clear current list
-    const transaction = db.transaction([historyStore], 'readonly');
-    const store = transaction.objectStore(historyStore);
-    const request = store.openCursor(null, 'prev');
-    let count = 0;
-    request.onsuccess = function(event) {
-        const cursor = event.target.result;
-        if (cursor && count < 10) { // Load up to 10 history entries
-            const li = document.createElement('li');
-            li.textContent = cursor.value;
-            historyList.appendChild(li);
-            cursor.continue();
-            count++;
-        }
-    };
-}
-
-function showHistory() {
-    buttonsDiv.style.display = 'none';
-    historySection.style.display = 'block';
-    loadHistory();
-}
-
-function hideHistory() {
-    historySection.style.display = 'none';
-    buttonsDiv.style.display = 'grid';
-    display.textContent = '0';
-    liveResult.textContent = '';
+    currentInput = currentInput.slice(0, -1);
+    display.textContent = currentInput;
 }
 
 function calculate() {
-    const input = display.textContent.trim();
-
-    // Speak welcome message if input contains only operators or power - kept as per original code
-    if (/^[+\-*/%()√]+$/.test(input) || input.includes('**')) {
-        const msg = new SpeechSynthesisUtterance(
-            "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
-        );
-        speechSynthesis.speak(msg);
-        return;
-    }
-
-    // Password setting logic - kept as per original code
-    if (input === '1234' && !storedPassword) {
-        settingNewPass = true;
-        display.textContent = 'Set New Pass';
-        liveResult.textContent = '';
-        return;
-    }
-
-    if (settingNewPass) {
-        if (input.length === 4) {
-            savePasswordToDB(input);
-            settingNewPass = false;
-            alert('New password set successfully!');
-            display.textContent = '0';
-        } else {
-            alert('Enter 4-digit password only.');
-        }
-        return;
-    }
-
-    // File manager access logic - kept as per original code
-    if (storedPassword && input === storedPassword) {
-        openFileManager();
-        display.textContent = '0';
-        liveResult.textContent = '';
-        return;
-    }
-
-    // Normal calculation logic
     try {
-        const percentageHandled = input.replace(/(\d+(?:\.\d+)?)\s*%\s*(\d+(?:\.\d+)?)/g, '($1*$2/100)');
-        const result = eval(percentageHandled);
-        saveToHistory(`${input} = ${result}`);
-        display.textContent = result;
-        liveResult.textContent = '';
-    } catch (error) {
-        display.textContent = 'Error';
-        liveResult.textContent = '';
-        console.error("Calculation error:", error);
+        let res = eval(currentInput);
+        result.textContent = "= " + res;
+        history.push(currentInput + " = " + res);
+        updateHistory();
+        currentInput = res.toString();
+    } catch {
+        result.textContent = "Error";
     }
 }
 
-function openFileManager() {
-    buttonsDiv.style.display = 'none';
-    historySection.style.display = 'none';
-    fileManager.style.display = 'block';
-    loadFiles();
-}
-
-function exitFileManager() {
-    fileManager.style.display = 'none';
-    buttonsDiv.style.display = 'grid';
-    display.textContent = '0';
-    liveResult.textContent = '';
-}
-
-// File input change listener - kept as per original code
-fileInput.addEventListener('change', () => {
-    const files = Array.from(fileInput.files);
-    files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            saveFileToDB({ name: file.name, data: reader.result, type: file.type });
-        };
-        reader.onerror = (error) => {
-            console.error("FileReader Error:", error);
-            alert("Error reading file.  See console for details.");
-        }
-        reader.readAsDataURL(file);
+function updateHistory() {
+    historyList.innerHTML = "";
+    history.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        historyList.appendChild(li);
     });
-});
+    saveHistoryToDB();
+}
 
-function saveFileToDB(fileData) {
-    const transaction = db.transaction([filesStore], 'readwrite');
-    const store = transaction.objectStore(filesStore);
-    const addRequest = store.add(fileData);
-    addRequest.onsuccess = () => {
-        loadFiles(); // Reload files after saving
-    };
-    transaction.onerror = (error) => {
-        console.error("Transaction Error (saveFileToDB):", error);
-        alert("Error saving file. See console for details.");
+// File manager functionality using IndexedDB
+function getDB(callback) {
+    const request = indexedDB.open("CalculatorDB", 1);
+    request.onerror = () => console.error("DB error");
+    request.onsuccess = () => callback(request.result);
+    request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        db.createObjectStore("files", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("history", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("password", { keyPath: "id" });
     };
 }
 
-function loadFiles() {
-    fileList.innerHTML = ''; // Clear current list
-    const transaction = db.transaction([filesStore], 'readonly');
-    const store = transaction.objectStore(filesStore);
-    const request = store.openCursor();
-    request.onsuccess = function(event) {
-        const cursor = event.target.result;
-        if (cursor) {
-            const file = cursor.value;
-            const fileDiv = document.createElement('div');
-            fileDiv.classList.add('file-item');
-            // Display image or video based on file type - kept as per original code
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = file.data;
-                fileDiv.appendChild(img);
-            } else if (file.type.startsWith('video/')) {
-                const video = document.createElement('video');
-                video.src = file.data;
-                video.controls = true;
-                video.volume = 1.0; // Set default volume
-                fileDiv.appendChild(video);
-            } else {
-                const p = document.createElement('p');
-                p.textContent = `File: ${file.name}`;
-                fileDiv.appendChild(p);
-            }
-            // Add rename and delete buttons - kept as per original code
-            const renameBtn = document.createElement('button');
-            renameBtn.classList.add('rename-btn');
-            renameBtn.textContent = 'Rename';
-            renameBtn.onclick = () => renameFile(cursor.key, file.name);
-            const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('delete-btn');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.onclick = () => deleteFile(cursor.key);
-            fileDiv.appendChild(renameBtn);
-            fileDiv.appendChild(deleteBtn);
-            fileList.appendChild(fileDiv);
-            cursor.continue(); // Move to the next file
-        }
-    };
-    request.onerror = (error) => {
-        console.error("Error loading files:", error);
-        alert("Error loading files. See console for details.");
-    };
+function savePasswordToDB(pwd) {
+    getDB(db => {
+        const tx = db.transaction("password", "readwrite");
+        tx.objectStore("password").put({ id: "userPassword", value: pwd });
+        tx.oncomplete = () => console.log("Password saved");
+    });
 }
 
-function renameFile(key, oldName) {
-    const newName = prompt('Enter new file name:', oldName);
-    if (newName) {
-        const transaction = db.transaction([filesStore], 'readwrite');
-        const store = transaction.objectStore(filesStore);
-        const getRequest = store.get(key);
-        getRequest.onsuccess = function() {
-            const file = getRequest.result;
-            file.name = newName;
-            const updateRequest = store.put(file, key);
-            updateRequest.onsuccess = () => {
-                loadFiles(); // Reload files after renaming
-            };
-            updateRequest.onerror = (error) => {
-                console.error("Error renaming file:", error);
-                alert("Error renaming file. See console for details.");
-            };
+function getPasswordFromDB(callback) {
+    getDB(db => {
+        const tx = db.transaction("password", "readonly");
+        const req = tx.objectStore("password").get("userPassword");
+        req.onsuccess = () => {
+            password = req.result ? req.result.value : null;
+            callback();
         };
-        getRequest.onerror = (error) => {
-            console.error("Error getting file for rename:", error);
-            alert("Error accessing file. See console for details.");
+    });
+}
+
+function saveHistoryToDB() {
+    getDB(db => {
+        const tx = db.transaction("history", "readwrite");
+        const store = tx.objectStore("history");
+        store.clear().onsuccess = () => {
+            history.forEach(item => store.add({ value: item }));
         };
+    });
+}
+
+function loadHistoryFromDB() {
+    getDB(db => {
+        const tx = db.transaction("history", "readonly");
+        const store = tx.objectStore("history");
+        const req = store.getAll();
+        req.onsuccess = () => {
+            history = req.result.map(r => r.value);
+            updateHistory();
+        };
+    });
+}
+
+function showHiddenSection() {
+    document.getElementById("calculatorApp").style.display = "none";
+    hiddenSection.style.display = "block";
+    displayFiles();
+}
+
+function hideHiddenSection() {
+    document.getElementById("calculatorApp").style.display = "block";
+    hiddenSection.style.display = "none";
+}
+
+function checkPassword() {
+    const inputPwd = prompt("Enter password:");
+    if (inputPwd === password) {
+        showHiddenSection();
+    } else {
+        alert("Wrong password");
     }
 }
 
-function deleteFile(key) {
-    const transaction = db.transaction([filesStore], 'readwrite');
-    const store = transaction.objectStore(filesStore);
-    const request = store.delete(key);
-    request.onsuccess = () => {
-        loadFiles(); // Reload files after deleting
-    };
-    request.onerror = (error) => {
-        console.error("Error deleting file:", error);
-        alert("Error deleting file. See console for details.");
-    };
+function setNewPassword() {
+    const newPwd = prompt("Set a new password:");
+    if (newPwd) {
+        password = newPwd;
+        savePasswordToDB(password);
+        alert("Password set successfully!");
+    }
 }
 
-// Splash screen + Welcome voice on DOMContentLoaded - kept as per original code
-window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(() => {
-        introScreen.style.display = "none";
-        document.getElementById("calculatorApp").style.display = "block";
-        if (!welcomeSaid) {
-            const welcome = new SpeechSynthesisUtterance(
-                "Welcome to Pradeep Samrat Calculator, Aapka swagat hai Pradeep Samrat Calculator mein."
-            );
-            speechSynthesis.speak(welcome);
-            welcomeSaid = true;
-        }
-    }, 2000);
-});
-</script>
-</body>
-</html>
+function uploadFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        const fileData = {
+            name: file.name,
+            type: file.type,
+            data: reader.result,
+            folder: currentFolder
+        };
+        saveFileToDB(fileData, displayFiles);
+    };
+    reader.readAsDataURL(file);
+}
+
+function saveFileToDB(fileData, callback) {
+    getDB(db => {
+        const tx = db.transaction("files", "readwrite");
+        tx.objectStore("files").add(fileData);
+        tx.oncomplete = () => {
+            console.log("File saved");
+            if (callback) callback();
+        };
+    });
+}
+
+function displayFiles() {
+    fileList.innerHTML = "";
+    getDB(db => {
+        const tx = db.transaction("files", "readonly");
+        const store = tx.objectStore("files");
+        const req = store.getAll();
+        req.onsuccess = () => {
+            req.result.forEach(file => {
+                if (file.folder === currentFolder) {
+                    const li = document.createElement("li");
+                    if (file.type.startsWith("image/")) {
+                        li.innerHTML = `<img src="${file.data}" width="100"><br>${file.name}`;
+                    } else if (file.type.startsWith("video/")) {
+                        li.innerHTML = `<video width="150" controls><source src="${file.data}" type="${file.type}"></video><br>${file.name}`;
+                    } else {
+                        li.textContent = file.name;
+                    }
+                    fileList.appendChild(li);
+                }
+            });
+        };
+    });
+}
+
+function createFolder() {
+    const folderName = prompt("Folder name:");
+    if (folderName) {
+        const option = document.createElement("option");
+        option.value = folderName;
+        option.textContent = folderName;
+        folderList.appendChild(option);
+    }
+}
+
+function changeFolder() {
+    currentFolder = folderList.value;
+    displayFiles();
+}
