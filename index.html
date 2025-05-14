@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Advanced Calculator with File Manager</title>
+    <title>Pradeep Samrat Calculator - Advanced Online Calculator</title>
+    <meta name="description" content="Pradeep Samrat Calculator: A powerful online advanced calculator with file manager and history. Perform complex calculations, manage files, and view calculation history. Free and easy to use.">
     <link rel="stylesheet" href="style.css">
     <meta name="google-site-verification" content="nGFTbKTXgO390_PuCuriykDmoe9w1p7ub2aX1ZuMhKw" />
+    <meta name="keywords" content="Pradeep Samrat Calculator, advanced calculator, online calculator, scientific calculator, file manager, calculation history, free calculator, web calculator, math calculator, expression evaluator">
 </head>
 <body>
     <div id="introScreen">🇮🇳Created By India🇮🇳</div>
 
     <div class="calculator" id="calculatorApp" style="display:none;">
+        <h1 class="main-heading">Pradeep Samrat Calculator - Advanced Calculator</h1>
         <div class="display" id="display">0</div>
         <div class="live-result" id="liveResult"></div>
         <div class="buttons" id="buttons">
@@ -41,16 +44,45 @@
         </div>
 
         <div id="historySection">
-            <h3>History</h3>
+            <h2>Calculation History - Pradeep Samrat Calculator</h2>
+            <p>View your previous calculations:</p>
             <ul id="historyList"></ul>
             <button class="exit-btn" onclick="hideHistory()">Back</button>
         </div>
 
         <div class="file-manager" id="fileManager">
+            <h2>File Manager - Pradeep Samrat Calculator</h2>
+            <p>Upload and manage your files:</p>
             <input type="file" id="fileInput" multiple accept="image/*,video/*" />
             <div id="fileList"></div>
             <button class="exit-btn" onclick="exitFileManager()">Exit</button>
         </div>
+        <section>
+            <h3>About Pradeep Samrat Calculator</h3>
+            <p>
+                Pradeep Samrat Calculator is a versatile online tool that allows users to perform basic and complex mathematical calculations, manage files, and view calculation history.  It is designed to be user-friendly and accessible from any device with an internet connection.
+            </p>
+            <h3>Key Features of Pradeep Samrat Calculator</h3>
+            <p>
+                Some of the key features include:
+            </p>
+            <ul>
+                <li>Advanced calculation capabilities</li>
+                <li>File management</li>
+                <li>Calculation history</li>
+                <li>User-friendly interface</li>
+            </ul>
+
+            <h3>Types of Calculations Supported</h3>
+             <p>
+                Our advanced calculator supports a wide variety of calculations, including:
+            </p>
+            <ul>
+                <li>Basic arithmetic operations (addition, subtraction, multiplication, division)</li>
+                <li>Scientific calculations (trigonometry, logarithms, exponents)</li>
+                 <li>Fractions and percentages</li>
+            </ul>
+        </section>
     </div>
 
     <script src="script.js"></script>
