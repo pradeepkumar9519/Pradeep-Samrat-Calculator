@@ -5,16 +5,82 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh; /* Changed height to min-height */
 }
+
 .calculator {
     background: #1f1f2e;
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    width: 330px;
+    width: 330px; /* Default width for larger screens */
+    max-width: 95%; /* Ensure it doesn't exceed screen width */
     position: relative;
 }
+
+/* Media query for mobile devices (max-width: 768px) */
+@media (max-width: 768px) {
+    .calculator {
+        width: 100%; /* Make calculator full width on mobile */
+        border-radius: 0; /* Optional: Remove border-radius on mobile for a full edge-to-edge look */
+        box-shadow: none; /* Optional: Remove shadow on mobile */
+        min-height: 100vh; /* Make calculator container take full viewport height */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 10px; /* Adjust padding for smaller screens */
+        justify-content: flex-start; /* Align items from the top */
+    }
+
+    .main-heading {
+        margin-top: 20px; /* Add some top margin for the heading on mobile */
+        text-align: center;
+        font-size: 1.5em; /* Adjust heading size for mobile */
+    }
+
+    .display {
+        font-size: 2.5em; /* Adjust display size for mobile */
+        height: 80px;
+        margin-bottom: 10px; /* Add some margin below the display */
+    }
+
+    .live-result {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+
+    .buttons {
+        margin-top: 10px;
+        gap: 8px;
+    }
+
+    button {
+        padding: 15px;
+        font-size: 1.1em;
+        border-radius: 8px;
+    }
+
+    #historySection, #fileManager, section {
+        margin-top: 30px; /* Add more top margin for these sections on mobile */
+        padding: 15px;
+        background-color: #1f1f2e; /* Ensure background color for these sections */
+        border-radius: 8px; /* Add some border-radius for these sections */
+    }
+
+    section h3 {
+        font-size: 1.3em;
+        margin-top: 15px;
+    }
+
+    section p, section ul {
+        font-size: 1em;
+    }
+
+    #introScreen {
+        font-size: 2.5em;
+    }
+}
+
 .display {
     background: #000;
     color: #0f0;
@@ -25,7 +91,9 @@ body {
     border-radius: 10px;
     overflow-x: auto;
     white-space: nowrap;
+    box-sizing: border-box; /* Ensure padding doesn't increase the width */
 }
+
 .live-result {
     font-size: 0.9em;
     color: #ccc;
@@ -33,15 +101,19 @@ body {
     margin-top: 5px;
     min-height: 20px;
     padding-right: 10px;
+    box-sizing: border-box; /* Ensure padding doesn't increase the width */
 }
+
 .buttons, .file-manager {
     margin-top: 20px;
 }
+
 .buttons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
 }
+
 button {
     padding: 20px;
     font-size: 1.2em;
@@ -50,32 +122,40 @@ button {
     background-color: #33334d;
     color: #fff;
     cursor: pointer;
+    box-sizing: border-box; /* Ensure padding doesn't increase the size */
 }
+
 button.equal { background: #ff5722; }
 button.clear { background: #e53935; }
 button.op { background: #388e3c; }
+
 #fileManager {
     display: none;
     color: #fff;
 }
+
 #fileList img, #fileList video {
     width: 100%;
     margin-top: 10px;
 }
+
 .exit-btn {
     background: #c62828;
     margin-top: 10px;
 }
+
 #historySection {
     display: none;
     color: white;
     margin-top: 20px;
 }
+
 #historySection ul {
     max-height: 150px;
     overflow-y: auto;
     padding-left: 20px;
 }
+
 .file-item {
     background-color: #303030;
     margin: 10px 0;
@@ -83,6 +163,7 @@ button.op { background: #388e3c; }
     color: white;
     border-radius: 8px;
 }
+
 .rename-btn, .delete-btn {
     margin-top: 5px;
     background-color: #ff9800;
@@ -107,4 +188,31 @@ button.op { background: #388e3c; }
     font-size: 2em;
     z-index: 9999;
     font-weight: bold;
+}
+
+section {
+    color: white;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #1f1f2e;
+    border-radius: 16px;
+}
+
+section h3 {
+    margin-top: 0;
+    font-size: 1.6em;
+    margin-bottom: 10px;
+}
+
+section p {
+    line-height: 1.6;
+}
+
+section ul {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+section li {
+    margin-bottom: 5px;
 }
