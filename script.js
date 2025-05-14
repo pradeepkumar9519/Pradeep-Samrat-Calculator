@@ -353,3 +353,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }, 2000);
 });
+</script>
+</body>
+</html>
