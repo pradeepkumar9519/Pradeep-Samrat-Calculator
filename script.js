@@ -339,6 +339,38 @@ function deleteFile(key) {
     };
 }
 
+// Theme functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const themeButtons = document.querySelectorAll('.theme-button');
+    const calculator = document.querySelector('.calculator');
+    const display = document.querySelector('.display');
+    const body = document.body;
+
+    themeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const theme = this.getAttribute('data-theme');
+            setTheme(theme);
+        });
+    });
+
+    function setTheme(theme) {
+        calculator.className = 'calculator'; // Reset classes
+        display.className = 'display';     // Reset classes
+        body.className = '';               // Reset body class
+        calculator.classList.add(theme + '-theme');
+        display.classList.add(theme + '-theme');
+        body.classList.add(theme + '-theme');
+        localStorage.setItem('calculatorTheme', theme); // Remember theme
+    }
+
+    const savedTheme = localStorage.getItem('calculatorTheme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        setTheme('dark'); // Default theme
+    }
+});
+
 // Splash screen + Welcome voice on DOMContentLoaded - kept as per original code
 window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
