@@ -79,6 +79,17 @@ body {
     #introScreen {
         font-size: 2.5em;
     }
+
+    .theme-buttons {
+        margin-top: 10px;
+        gap: 5px;
+    }
+
+    .theme-button {
+        padding: 8px 12px;
+        font-size: 0.8em;
+        border-radius: 5px;
+    }
 }
 
 .display {
@@ -215,4 +226,71 @@ section ul {
 
 section li {
     margin-bottom: 5px;
+}
+
+/* Theme styles */
+.light-theme.calculator {
+    background: #f0f0f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.light-theme.display {
+    background: #e0e0e0;
+    color: #000;
+}
+
+.light-theme.body {
+    background: #fff;
+    color: #333;
+}
+
+.colorful-theme.calculator {
+    background: linear-gradient(to right, #ff6e7f, #bfe9fe);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.colorful-theme.display {
+    background: #fff;
+    color: #333;
+}
+
+.colorful-theme.body {
+    background: #f8f8f8;
+    color: #333;
+}
+
+/* Theme buttons style */
+.theme-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.theme-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.theme-button:hover {
+    opacity: 0.8;
+}
+
+.theme-button[data-theme="dark"] {
+    background-color: #333;
+    color: #fff;
+}
+
+.theme-button[data-theme="light"] {
+    background-color: #ddd;
+    color: #333;
+}
+
+.theme-button[data-theme="colorful"] {
+    background: linear-gradient(to right, #ff6e7f, #bfe9fe);
+    color: #fff;
 }
