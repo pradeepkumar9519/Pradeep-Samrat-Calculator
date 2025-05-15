@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://pradeepkumar9519.github.io/Pradeep-Samrat-Calculator/sitemap.xml
