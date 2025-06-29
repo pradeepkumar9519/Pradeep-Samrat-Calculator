@@ -5,7 +5,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Changed height to min-height */
+    min-height: 100vh;
 }
 
 .calculator {
@@ -13,35 +13,34 @@ body {
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    width: 330px; /* Default width for larger screens */
-    max-width: 95%; /* Ensure it doesn't exceed screen width */
+    width: 330px;
+    max-width: 95%;
     position: relative;
 }
 
-/* Media query for mobile devices (max-width: 768px) */
 @media (max-width: 768px) {
     .calculator {
-        width: 100%; /* Make calculator full width on mobile */
-        border-radius: 0; /* Optional: Remove border-radius on mobile for a full edge-to-edge look */
-        box-shadow: none; /* Optional: Remove shadow on mobile */
-        min-height: 100vh; /* Make calculator container take full viewport height */
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px 10px; /* Adjust padding for smaller screens */
-        justify-content: flex-start; /* Align items from the top */
+        padding: 20px 10px;
+        justify-content: flex-start;
     }
 
     .main-heading {
-        margin-top: 20px; /* Add some top margin for the heading on mobile */
+        margin-top: 20px;
         text-align: center;
-        font-size: 1.5em; /* Adjust heading size for mobile */
+        font-size: 1.5em;
     }
 
     .display {
-        font-size: 2.5em; /* Adjust display size for mobile */
+        font-size: 2.5em;
         height: 80px;
-        margin-bottom: 10px; /* Add some margin below the display */
+        margin-bottom: 10px;
     }
 
     .live-result {
@@ -61,10 +60,10 @@ body {
     }
 
     #historySection, #fileManager, section {
-        margin-top: 30px; /* Add more top margin for these sections on mobile */
+        margin-top: 30px;
         padding: 15px;
-        background-color: #1f1f2e; /* Ensure background color for these sections */
-        border-radius: 8px; /* Add some border-radius for these sections */
+        background-color: #1f1f2e;
+        border-radius: 8px;
     }
 
     section h3 {
@@ -79,17 +78,6 @@ body {
     #introScreen {
         font-size: 2.5em;
     }
-
-    .theme-buttons {
-        margin-top: 10px;
-        gap: 5px;
-    }
-
-    .theme-button {
-        padding: 8px 12px;
-        font-size: 0.8em;
-        border-radius: 5px;
-    }
 }
 
 .display {
@@ -102,7 +90,7 @@ body {
     border-radius: 10px;
     overflow-x: auto;
     white-space: nowrap;
-    box-sizing: border-box; /* Ensure padding doesn't increase the width */
+    box-sizing: border-box;
 }
 
 .live-result {
@@ -112,7 +100,7 @@ body {
     margin-top: 5px;
     min-height: 20px;
     padding-right: 10px;
-    box-sizing: border-box; /* Ensure padding doesn't increase the width */
+    box-sizing: border-box;
 }
 
 .buttons, .file-manager {
@@ -133,7 +121,7 @@ button {
     background-color: #33334d;
     color: #fff;
     cursor: pointer;
-    box-sizing: border-box; /* Ensure padding doesn't increase the size */
+    box-sizing: border-box;
 }
 
 button.equal { background: #ff5722; }
@@ -226,71 +214,4 @@ section ul {
 
 section li {
     margin-bottom: 5px;
-}
-
-/* Theme styles */
-.light-theme.calculator {
-    background: #f0f0f0;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-
-.light-theme.display {
-    background: #e0e0e0;
-    color: #000;
-}
-
-.light-theme.body {
-    background: #fff;
-    color: #333;
-}
-
-.colorful-theme.calculator {
-    background: linear-gradient(to right, #ff6e7f, #bfe9fe);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.colorful-theme.display {
-    background: #fff;
-    color: #333;
-}
-
-.colorful-theme.body {
-    background: #f8f8f8;
-    color: #333;
-}
-
-/* Theme buttons style */
-.theme-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    justify-content: center;
-}
-
-.theme-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
-}
-
-.theme-button:hover {
-    opacity: 0.8;
-}
-
-.theme-button[data-theme="dark"] {
-    background-color: #333;
-    color: #fff;
-}
-
-.theme-button[data-theme="light"] {
-    background-color: #ddd;
-    color: #333;
-}
-
-.theme-button[data-theme="colorful"] {
-    background: linear-gradient(to right, #ff6e7f, #bfe9fe);
-    color: #fff;
 }
